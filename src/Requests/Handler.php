@@ -1,6 +1,6 @@
 <?php
 
-namespace JSHayes\GuzzleTesting\Requests;
+namespace JSHayes\FakeRequests\Requests;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -37,7 +37,7 @@ class Handler
      * it
      *
      * @param callable $callback
-     * @return \JSHayes\GuzzleTesting\Requests\Handler
+     * @return \JSHayes\FakeRequests\Requests\Handler
      */
     public function inspectRequest(callable $callback): Handler
     {
@@ -53,7 +53,7 @@ class Handler
      *          ResponseInterface
      *          callable, @see respondWithCallback
      *          int, @see responseWithParameters
-     * @return \JSHayes\GuzzleTesting\Requests\Handler
+     * @return \JSHayes\FakeRequests\Requests\Handler
      */
     public function respondWith($arg): Handler
     {

@@ -5,7 +5,7 @@ namespace Tests\Unit\Requests;
 use JsonSerializable;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
-use JSHayes\GuzzleTesting\Requests\ResponseBuilder;
+use JSHayes\FakeRequests\Requests\ResponseBuilder;
 
 class ResponseBuilderTest extends TestCase
 {

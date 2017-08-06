@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use Tests\CanSnoopObjects;
 use GuzzleHttp\HandlerStack;
 use PHPUnit\Framework\TestCase;
-use JSHayes\GuzzleTesting\ClientFactory;
+use JSHayes\FakeRequests\ClientFactory;
 
 class ClientFactoryTest extends TestCase
 {

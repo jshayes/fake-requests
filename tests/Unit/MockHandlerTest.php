@@ -3,8 +3,8 @@
 namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use JSHayes\GuzzleTesting\MockHandler;
-use JSHayes\GuzzleTesting\Requests\Handler;
+use JSHayes\FakeRequests\MockHandler;
+use JSHayes\FakeRequests\Requests\Handler;
 
 class MockHandlerTest extends TestCase
 {

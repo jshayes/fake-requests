@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "JSHayes\\GuzzleTesting\\": "src"
+            "JSHayes\\FakeRequests\\": "src"
         }
     },
     "autoload-dev": {

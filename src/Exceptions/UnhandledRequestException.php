@@ -1,6 +1,6 @@
 <?php
 
-namespace JSHayes\GuzzleTesting\Exceptions;
+namespace JSHayes\FakeRequests\Exceptions;
 
 use Exception;
 

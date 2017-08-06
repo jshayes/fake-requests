@@ -1,14 +1,14 @@
 <?php
 
-namespace JSHayes\GuzzleTesting;
+namespace JSHayes\FakeRequests;
 
 use GuzzleHttp\Promise;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
 use Psr\Http\Message\RequestInterface;
 use GuzzleHttp\Promise\PromiseInterface;
-use JSHayes\GuzzleTesting\Requests\Handler;
-use JSHayes\GuzzleTesting\Exceptions\UnhandledRequestException;
+use JSHayes\FakeRequests\Requests\Handler;
+use JSHayes\FakeRequests\Exceptions\UnhandledRequestException;
 
 class MockHandler
 {
@@ -24,7 +24,7 @@ class MockHandler
      *
      * @param string $method
      * @param string $path
-     * @return \JSHayes\GuzzleTesting\Requests\Handler
+     * @return \JSHayes\FakeRequests\Requests\Handler
      */
     private function addRequestHandler(string $method, string $path): Handler
     {
@@ -43,7 +43,7 @@ class MockHandler
      * Add a request handler for the get request to the given path
      *
      * @param string $path
-     * @return \JSHayes\GuzzleTesting\Requests\Handler
+     * @return \JSHayes\FakeRequests\Requests\Handler
      */
     public function get(string $path): Handler
     {
@@ -54,7 +54,7 @@ class MockHandler
      * Add a request handler for the post request to the given path
      *
      * @param string $path
-     * @return \JSHayes\GuzzleTesting\Requests\Handler
+     * @return \JSHayes\FakeRequests\Requests\Handler
      */
     public function post(string $path): Handler
     {
@@ -65,7 +65,7 @@ class MockHandler
      * Add a request handler for the put request to the given path
      *
      * @param string $path
-     * @return \JSHayes\GuzzleTesting\Requests\Handler
+     * @return \JSHayes\FakeRequests\Requests\Handler
      */
     public function put(string $path): Handler
     {
@@ -76,7 +76,7 @@ class MockHandler
      * Add a request handler for the patch request to the given path
      *
      * @param string $path
-     * @return \JSHayes\GuzzleTesting\Requests\Handler
+     * @return \JSHayes\FakeRequests\Requests\Handler
      */
     public function patch(string $path): Handler
     {
@@ -87,7 +87,7 @@ class MockHandler
      * Add a request handler for the delete request to the given path
      *
      * @param string $path
-     * @return \JSHayes\GuzzleTesting\Requests\Handler
+     * @return \JSHayes\FakeRequests\Requests\Handler
      */
     public function delete(string $path): Handler
     {
@@ -98,7 +98,7 @@ class MockHandler
      * Add a request handler for the head request to the given path
      *
      * @param string $path
-     * @return \JSHayes\GuzzleTesting\Requests\Handler
+     * @return \JSHayes\FakeRequests\Requests\Handler
      */
     public function head(string $path): Handler
     {
@@ -109,7 +109,7 @@ class MockHandler
      * Add a request handler for the options request to the given path
      *
      * @param string $path
-     * @return \JSHayes\GuzzleTesting\Requests\Handler
+     * @return \JSHayes\FakeRequests\Requests\Handler
      */
     public function options(string $path): Handler
     {

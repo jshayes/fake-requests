@@ -4,8 +4,8 @@ namespace Tests\Feature\Traits\Laravel;
 
 use GuzzleHttp\Psr7\Response;
 use Orchestra\Testbench\TestCase;
-use JSHayes\GuzzleTesting\ClientFactory;
-use JSHayes\GuzzleTesting\Traits\Laravel\FakeRequests;
+use JSHayes\FakeRequests\ClientFactory;
+use JSHayes\FakeRequests\Traits\Laravel\FakeRequests;
 
 class FakeRequestsTest extends TestCase
 {

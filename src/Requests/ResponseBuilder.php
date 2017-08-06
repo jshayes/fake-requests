@@ -1,6 +1,6 @@
 <?php
 
-namespace JSHayes\GuzzleTesting\Requests;
+namespace JSHayes\FakeRequests\Requests;
 
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -15,7 +15,7 @@ class ResponseBuilder
      * Set the status code of this response
      *
      * @param int $status
-     * @return \JSHayes\GuzzleTesting\Requests\ResponseBuilder
+     * @return \JSHayes\FakeRequests\Requests\ResponseBuilder
      */
     public function status(int $status): ResponseBuilder
     {
@@ -27,7 +27,7 @@ class ResponseBuilder
      * Set the headers of this response
      *
      * @param array $headers
-     * @return \JSHayes\GuzzleTesting\Requests\ResponseBuilder
+     * @return \JSHayes\FakeRequests\Requests\ResponseBuilder
      */
     public function headers(array $headers): ResponseBuilder
     {
@@ -39,7 +39,7 @@ class ResponseBuilder
      * Set the body of the response
      *
      * @param string|array|\JsonSerializable $body
-     * @return \JSHayes\GuzzleTesting\Requests\ResponseBuilder
+     * @return \JSHayes\FakeRequests\Requests\ResponseBuilder
      */
     public function body($body): ResponseBuilder
     {

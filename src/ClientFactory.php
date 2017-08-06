@@ -1,6 +1,6 @@
 <?php
 
-namespace JSHayes\GuzzleTesting;
+namespace JSHayes\FakeRequests;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;

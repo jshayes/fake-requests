@@ -1,9 +1,9 @@
 <?php
 
-namespace JSHayes\GuzzleTesting\Traits\Laravel;
+namespace JSHayes\FakeRequests\Traits\Laravel;
 
-use JSHayes\GuzzleTesting\MockHandler;
-use JSHayes\GuzzleTesting\ClientFactory;
+use JSHayes\FakeRequests\MockHandler;
+use JSHayes\FakeRequests\ClientFactory;
 
 trait FakeRequests
 {

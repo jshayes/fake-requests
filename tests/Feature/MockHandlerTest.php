@@ -4,10 +4,10 @@ namespace Tests\Feature;
 
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use JSHayes\GuzzleTesting\MockHandler;
+use JSHayes\FakeRequests\MockHandler;
 use Psr\Http\Message\RequestInterface;
-use JSHayes\GuzzleTesting\ClientFactory;
-use JSHayes\GuzzleTesting\Exceptions\UnhandledRequestException;
+use JSHayes\FakeRequests\ClientFactory;
+use JSHayes\FakeRequests\Exceptions\UnhandledRequestException;
 
 class MockHandlerTest extends TestCase
 {

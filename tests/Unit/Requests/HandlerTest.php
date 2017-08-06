@@ -7,8 +7,8 @@ use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use JSHayes\GuzzleTesting\Requests\Handler;
-use JSHayes\GuzzleTesting\Requests\ResponseBuilder;
+use JSHayes\FakeRequests\Requests\Handler;
+use JSHayes\FakeRequests\Requests\ResponseBuilder;
 
 class HandlerTest extends TestCase
 {
