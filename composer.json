@@ -1,5 +1,5 @@
 {
-    "name": "jshayes/guzzle-testing",
+    "name": "jshayes/fake-requests",
     "description": "A package to make it easier to test with guzzle.",
     "license": "MIT",
     "authors": [
