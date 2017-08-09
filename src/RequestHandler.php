@@ -1,11 +1,11 @@
 <?php
 
-namespace JSHayes\FakeRequests\Requests;
+namespace JSHayes\FakeRequests;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class Handler
+class RequestHandler
 {
     private $callback;
     private $response;
@@ -37,9 +37,9 @@ class Handler
      * it
      *
      * @param callable $callback
-     * @return \JSHayes\FakeRequests\Requests\Handler
+     * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function inspectRequest(callable $callback): Handler
+    public function inspectRequest(callable $callback): RequestHandler
     {
         $this->callback = $callback;
         return $this;
@@ -53,9 +53,9 @@ class Handler
      *          ResponseInterface
      *          callable, @see respondWithCallback
      *          int, @see responseWithParameters
-     * @return \JSHayes\FakeRequests\Requests\Handler
+     * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function respondWith($arg): Handler
+    public function respondWith($arg): RequestHandler
     {
         if ($arg instanceof ResponseInterface) {
             $this->response = $arg;

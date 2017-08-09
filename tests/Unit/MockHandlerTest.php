@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use GuzzleHttp\Psr7\Request;
 use PHPUnit\Framework\TestCase;
 use JSHayes\FakeRequests\MockHandler;
-use JSHayes\FakeRequests\Requests\Handler;
+use JSHayes\FakeRequests\RequestHandler;
 
 class MockHandlerTest extends TestCase
 {
@@ -14,7 +14,7 @@ class MockHandlerTest extends TestCase
      */
     public function get_returns_a_request_handler()
     {
-        $this->assertInstanceOf(Handler::class, (new MockHandler())->get('/test'));
+        $this->assertInstanceOf(RequestHandler::class, (new MockHandler())->get('/test'));
     }
 
     /**
@@ -22,7 +22,7 @@ class MockHandlerTest extends TestCase
      */
     public function post_returns_a_request_handler()
     {
-        $this->assertInstanceOf(Handler::class, (new MockHandler())->post('/test'));
+        $this->assertInstanceOf(RequestHandler::class, (new MockHandler())->post('/test'));
     }
 
     /**
@@ -30,7 +30,7 @@ class MockHandlerTest extends TestCase
      */
     public function put_returns_a_request_handler()
     {
-        $this->assertInstanceOf(Handler::class, (new MockHandler())->put('/test'));
+        $this->assertInstanceOf(RequestHandler::class, (new MockHandler())->put('/test'));
     }
 
     /**
@@ -38,7 +38,7 @@ class MockHandlerTest extends TestCase
      */
     public function patch_returns_a_request_handler()
     {
-        $this->assertInstanceOf(Handler::class, (new MockHandler())->patch('/test'));
+        $this->assertInstanceOf(RequestHandler::class, (new MockHandler())->patch('/test'));
     }
 
     /**
@@ -46,7 +46,7 @@ class MockHandlerTest extends TestCase
      */
     public function delete_returns_a_request_handler()
     {
-        $this->assertInstanceOf(Handler::class, (new MockHandler())->delete('/test'));
+        $this->assertInstanceOf(RequestHandler::class, (new MockHandler())->delete('/test'));
     }
 
     /**
@@ -54,7 +54,7 @@ class MockHandlerTest extends TestCase
      */
     public function head_returns_a_request_handler()
     {
-        $this->assertInstanceOf(Handler::class, (new MockHandler())->head('/test'));
+        $this->assertInstanceOf(RequestHandler::class, (new MockHandler())->head('/test'));
     }
 
     /**
@@ -62,7 +62,7 @@ class MockHandlerTest extends TestCase
      */
     public function options_returns_a_request_handler()
     {
-        $this->assertInstanceOf(Handler::class, (new MockHandler())->options('/test'));
+        $this->assertInstanceOf(RequestHandler::class, (new MockHandler())->options('/test'));
     }
 
     /**
