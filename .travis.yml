@@ -8,5 +8,6 @@ script:
   - ./vendor/bin/phpunit
 
 after_success:
+  - mkdir -p build/logs
   - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
   - travis_retry php ./vendor/bin/coveralls -v
