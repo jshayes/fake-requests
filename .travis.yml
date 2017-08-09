@@ -6,3 +6,7 @@ php:
 script:
   - composer install
   - ./vendor/bin/phpunit
+
+after_success:
+  - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+  - travis_retry php ./vendor/bin/coveralls -v
