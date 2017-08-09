@@ -1,4 +1,4 @@
-![](https://travis-ci.org/jshayes/fake-requests.svg?branch=master)
+[![Build Status](https://travis-ci.org/jshayes/fake-requests.svg?branch=master)](https://travis-ci.org/jshayes/fake-requests) [![Coverage Status](https://coveralls.io/repos/github/jshayes/fake-requests/badge.svg?branch=master)](https://coveralls.io/github/jshayes/fake-requests?branch=master)
 
 # fake-requests
 A simple package to make testing with guzzle easier
