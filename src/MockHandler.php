@@ -118,6 +118,16 @@ class MockHandler
     }
 
     /**
+     * Determine if there are not more handlers registered
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return $this->handlers->flatten()->isEmpty();
+    }
+
+    /**
      * Find the first request handler that matches the method and path of the
      * given request and execute it
      *

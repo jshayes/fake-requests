@@ -7,11 +7,23 @@ use JSHayes\FakeRequests\ClientFactory;
 
 trait FakeRequests
 {
+    protected $mockHandler;
+
     protected function fakeRequests(): MockHandler
     {
         $factory = new ClientFactory();
-        $factory->setHandler($mockHandler = new MockHandler());
+        $factory->setHandler($this->mockHandler = new MockHandler());
         app()->instance(ClientFactory::class, $factory);
-        return $mockHandler;
+        return $this->mockHandler;
+    }
+
+    /**
+     * @after
+     */
+    protected function checkHandler()
+    {
+        if (!is_null($this->mockHandler)) {
+            $this->assertTrue($this->mockHandler->isEmpty());
+        }
     }
 }
