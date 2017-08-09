@@ -1,3 +1,5 @@
+![](https://travis-ci.org/jshayes/fake-requests.svg?branch=master)
+
 # fake-requests
 A simple package to make testing with guzzle easier
 
