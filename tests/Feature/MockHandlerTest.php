@@ -148,4 +148,15 @@ class MockHandlerTest extends TestCase
         $this->assertSame(200, $client->get('/test')->getStatusCode());
         $this->assertSame(201, $client->post('/test')->getStatusCode());
     }
+
+    /**
+     * @test
+     */
+    public function it_matches_paths_with_preceeding_slash()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->get('test')->respondWith(200);
+
+        $this->assertSame(200, $client->get('/test')->getStatusCode());
+    }
 }

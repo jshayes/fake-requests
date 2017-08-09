@@ -28,6 +28,7 @@ class MockHandler
      */
     private function addRequestHandler(string $method, string $path): Handler
     {
+        $path = ltrim($path, '/');
         $handler = new Handler();
 
         $methodHandlers = $this->handlers->get($method, new Collection());
@@ -127,7 +128,7 @@ class MockHandler
     public function __invoke(RequestInterface $request, array $options): PromiseInterface
     {
         $method = strtoupper($request->getMethod());
-        $path = $request->getUri()->getPath();
+        $path = ltrim($request->getUri()->getPath(), '/');
 
         $methodHandlers = $this->handlers->get($method, new Collection());
         $pathHandlers = $methodHandlers->get($path, new Collection());
