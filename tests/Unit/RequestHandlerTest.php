@@ -87,4 +87,50 @@ class RequestHandlerTest extends TestCase
 
         $this->assertTrue($ran);
     }
+
+    /**
+     * @test
+     */
+    public function it_should_handle_requests_by_default()
+    {
+        $handler = new RequestHandler();
+        $this->assertTrue($handler->shouldHandle(new Request('GET', '/test'), []));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_handle_requests_when_the_when_condition_fails()
+    {
+        $handler = new RequestHandler();
+        $handler->when(function () {
+            return false;
+        });
+        $this->assertFalse($handler->shouldHandle(new Request('GET', '/test'), []));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_handle_requests_when_the_when_condition_passes()
+    {
+        $handler = new RequestHandler();
+        $handler->when(function () {
+            return true;
+        });
+        $this->assertTrue($handler->shouldHandle(new Request('GET', '/test'), []));
+    }
+
+    /**
+     * @test
+     */
+    public function you_can_get_the_request_after_one_has_been_handled()
+    {
+        $handler = new RequestHandler();
+        $request = new Request('GET', '/test');
+
+        $handler->handle($request, []);
+
+        $this->assertSame($request, $handler->getRequest());
+    }
 }
