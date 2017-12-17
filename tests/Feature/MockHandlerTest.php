@@ -225,4 +225,15 @@ class MockHandlerTest extends TestCase
         $this->expectException(UnhandledRequestException::class);
         $client->get('/wat');
     }
+
+    /**
+     * @test
+     */
+    public function the_expects_method_can_be_used_to_make_an_expectation()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->expects('get', '/test')->respondWith(200);
+
+        $this->assertSame(200, $client->get('/test')->getStatusCode());
+    }
 }

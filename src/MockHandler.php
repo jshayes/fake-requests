@@ -26,8 +26,9 @@ class MockHandler
      * @param string $path
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    private function addRequestHandler(string $method, string $path): RequestHandler
+    public function expects(string $method, string $path): RequestHandler
     {
+        $method = strtoupper($method);
         $path = ltrim($path, '/');
         $handler = new RequestHandler();
 
@@ -48,7 +49,7 @@ class MockHandler
      */
     public function get(string $path): RequestHandler
     {
-        return $this->addRequestHandler('GET', $path);
+        return $this->expects('GET', $path);
     }
 
     /**
@@ -59,7 +60,7 @@ class MockHandler
      */
     public function post(string $path): RequestHandler
     {
-        return $this->addRequestHandler('POST', $path);
+        return $this->expects('POST', $path);
     }
 
     /**
@@ -70,7 +71,7 @@ class MockHandler
      */
     public function put(string $path): RequestHandler
     {
-        return $this->addRequestHandler('PUT', $path);
+        return $this->expects('PUT', $path);
     }
 
     /**
@@ -81,7 +82,7 @@ class MockHandler
      */
     public function patch(string $path): RequestHandler
     {
-        return $this->addRequestHandler('PATCH', $path);
+        return $this->expects('PATCH', $path);
     }
 
     /**
@@ -92,7 +93,7 @@ class MockHandler
      */
     public function delete(string $path): RequestHandler
     {
-        return $this->addRequestHandler('DELETE', $path);
+        return $this->expects('DELETE', $path);
     }
 
     /**
@@ -103,7 +104,7 @@ class MockHandler
      */
     public function head(string $path): RequestHandler
     {
-        return $this->addRequestHandler('HEAD', $path);
+        return $this->expects('HEAD', $path);
     }
 
     /**
@@ -114,7 +115,7 @@ class MockHandler
      */
     public function options(string $path): RequestHandler
     {
-        return $this->addRequestHandler('OPTIONS', $path);
+        return $this->expects('OPTIONS', $path);
     }
 
     /**
