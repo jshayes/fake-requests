@@ -23,7 +23,7 @@ trait FakeRequests
     protected function checkHandler()
     {
         if (!is_null($this->mockHandler)) {
-            $this->assertTrue($this->mockHandler->isEmpty());
+            $this->assertTrue($this->mockHandler->isEmpty(), 'Not all requests expectations were met.');
         }
     }
 }
