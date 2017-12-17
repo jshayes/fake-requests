@@ -9,6 +9,7 @@ class RequestHandler
 {
     private $callback;
     private $response;
+    private $request;
     private $when;
 
     public function __construct()
@@ -44,6 +45,8 @@ class RequestHandler
         if (!is_null($this->callback)) {
             call_user_func($this->callback, $request, $options);
         }
+
+        $this->request = $request;
 
         return $this->response;
     }
@@ -124,5 +127,15 @@ class RequestHandler
             $builder->body($body);
             $builder->headers($headers);
         });
+    }
+
+    /**
+     * Return the request that this handler handled
+     *
+     * @return \Psr\Http\Message\RequestInterface|null
+     */
+    public function getRequest(): ?RequestInterface
+    {
+        return $this->request;
     }
 }
