@@ -15,7 +15,9 @@ class MockHandlerTest extends TestCase
     {
         $factory = new ClientFactory();
         $factory->setHandler($handler);
-        return $factory->make($options);
+        $client = $factory->make($options);
+        $client->getConfig('handler')->remove('http_errors');
+        return $client;
     }
 
     /**
@@ -158,5 +160,69 @@ class MockHandlerTest extends TestCase
         $mockHandler->get('test')->respondWith(200);
 
         $this->assertSame(200, $client->get('/test')->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_response_when_the_when_condition_passes()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->get('/test')->respondWith(200)->when(function () {
+            return false;
+        });
+        $mockHandler->get('/test')->respondWith(404)->when(function () {
+            return true;
+        });
+
+        $this->assertSame(404, $client->get('/test')->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_first_response_that_passes_the_when_condition()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->get('/test')->respondWith(200)->when(function () {
+            return true;
+        });
+        $mockHandler->get('/test')->respondWith(404)->when(function () {
+            return true;
+        });
+
+        $this->assertSame(200, $client->get('/test')->getStatusCode());
+        $this->assertSame(404, $client->get('/test')->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_doesnt_return_a_response_when_none_of_the_when_conditions_pass()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->get('/test')->respondWith(200)->when(function () {
+            return false;
+        });
+        $mockHandler->get('/test')->respondWith(404)->when(function () {
+            return false;
+        });
+
+        $this->expectException(UnhandledRequestException::class);
+        $client->get('/test');
+    }
+
+    /**
+     * @test
+     */
+    public function it_doesnt_return_a_response_when_the_path_does_not_match_but_the_when_condition_passes()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->get('/test')->respondWith(200)->when(function () {
+            return true;
+        });
+
+        $this->expectException(UnhandledRequestException::class);
+        $client->get('/wat');
     }
 }

@@ -9,10 +9,26 @@ class RequestHandler
 {
     private $callback;
     private $response;
+    private $when;
 
     public function __construct()
     {
         $this->respondWith(function () {});
+        $this->when(function () {
+            return true;
+        });
+    }
+
+    /**
+     * Determine if this request should be handled
+     *
+     * @param \Psr\Http\Message\RequestInterface $request
+     * @param arrar $options
+     * @return bool
+     */
+    public function shouldHandle(RequestInterface $request, array $options): bool
+    {
+        return call_user_func($this->when, $request, $options);
     }
 
     /**
@@ -42,6 +58,18 @@ class RequestHandler
     public function inspectRequest(callable $callback): RequestHandler
     {
         $this->callback = $callback;
+        return $this;
+    }
+
+    /**
+     * Set the callback that determines when this request should be handled
+     *
+     * @param callable $callback
+     * @return \JSHayes\FakeRequests\RequestHandler
+     */
+    public function when(callable $callback): RequestHandler
+    {
+        $this->when = $callback;
         return $this;
     }
 

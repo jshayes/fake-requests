@@ -147,7 +147,13 @@ class MockHandler
             throw new UnhandledRequestException($method, $path);
         }
 
-        $handler = $pathHandlers->shift();
-        return Promise\promise_for($handler->handle($request, $options));
+        foreach ($pathHandlers as $key => $handler) {
+            if ($handler->shouldHandle($request, $options)) {
+                $pathHandlers->pull($key);
+                return Promise\promise_for($handler->handle($request, $options));
+            }
+        }
+
+        throw new UnhandledRequestException($method, $path);
     }
 }
