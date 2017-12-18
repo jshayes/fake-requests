@@ -10,14 +10,14 @@ You can register expected calls to the `MockHandler`. The mock handler has metho
 use JSHayes\FakeRequests\MockHandler;
 use JSHayes\FakeRequests\ClientFactory;
 
-public function test() 
+public function test()
 {
     $factory = new ClientFactory();
     $factory->setHandler($mockHandler = new MockHandler());
-    
+
     $mockHandler->get('/get-request');
     $mockHandler->post('/post-request');
-    
+
     $factory->make()->get('/get-request');
     $factory->make()->post('/post-request');
 }
@@ -29,6 +29,42 @@ The `ClientFactory` can be used to resolve guzzle client instances. You can bind
 
 Once an expectation is met, it is removed from the handler. So if you make the same request twice you have to add two separate expectations.
 
+You can also use the following alternative syntax
+```PHP
+use JSHayes\FakeRequests\MockHandler;
+use JSHayes\FakeRequests\ClientFactory;
+
+public function test()
+{
+    $factory = new ClientFactory();
+    $factory->setHandler($mockHandler = new MockHandler());
+
+    $mockHandler->expects('get', '/get-request');
+    $mockHandler->expects('post', '/post-request');
+
+    $factory->make()->get('/get-request');
+    $factory->make()->post('/post-request');
+}
+```
+
+This example sets up the same expectations as the example above.
+
+You can also specify hosts in the uri, rather than just the path. This can allow you to ensure the correct service is being hit in the case that you talk to more than one remote service.
+```PHP
+use JSHayes\FakeRequests\MockHandler;
+use JSHayes\FakeRequests\ClientFactory;
+
+public function test()
+{
+    $factory = new ClientFactory();
+    $factory->setHandler($mockHandler = new MockHandler());
+
+    $mockHandler->expects('get', 'https://test.dev/get-request');
+
+    $factory->make()->get('https://test.dev/get-request');
+}
+```
+
 ## Inspecting the request
 If you need to make assertions on the request that created, or the options that are provided, you can use the `inspectRequest` method. This method receives an instance of `\Psr\Http\Message\RequestInterface` as the first parameter.
 ```PHP
@@ -36,6 +72,15 @@ $mockHandler->get('/test')->inspectRequest(function (RequestInterface $request, 
     // Make assertions on the request or options here
 });
 ```
+
+Alternatively, you can use the `getRequest` method to get the request off the RequestHandler after it has been handled.
+```PHP
+$expectation = $mockHandler->get('/test');
+$factory->make()->get('/get-request');
+$expectation->getRequest();
+```
+
+Note that the request is null until one has been handled by the handler.
 
 ## Customizing the response
 There are a few ways to create a custom response for each expectation. When you create a custom response, that response is what will be returned to the guzzle client when the request expectation is met. The three ways to customize the response are as follows.
@@ -59,6 +104,17 @@ $mockHandler->get('/test')->respondWith(function (ResponseBuilder $builder) {
 });
 ```
 
+## Controlling when a handler should be handled
+If you would like more control over when a RequestHandler handles a given request, you can use the `when` method. This method receives an instance of `\Psr\Http\Message\RequestInterface` as the first parameter.
+
+```PHP
+$mockHandler->get('/test')->when(function (RequestInterface $request, array $options) {
+    return true;
+});
+```
+
+The handler will only handle the request when the method and uri match, and when the `when` callback returns true.
+
 ## Testing with Laravel
 This package also comes with a trait to make testing with Laravel a bit easier.
 
@@ -68,7 +124,7 @@ use JSHayes\FakeRequests\Traits\Laravel\FakeRequests;
 class SomeTest extends TestCase
 {
     use FakeRequests;
-    
+
     /**
      * @test
      */
