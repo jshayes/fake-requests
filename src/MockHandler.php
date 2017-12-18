@@ -3,6 +3,7 @@
 namespace JSHayes\FakeRequests;
 
 use GuzzleHttp\Promise;
+use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
 use Psr\Http\Message\RequestInterface;
@@ -20,92 +21,92 @@ class MockHandler
     }
 
     /**
-     * Add a request handler for the given http method and path
+     * Add a request handler for the given http method and uri
      *
      * @param string $method
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function expects(string $method, string $path): RequestHandler
+    public function expects(string $method, string $uri): RequestHandler
     {
-        return $this->handlers->push(new RequestHandler($method, $path))->last();
+        return $this->handlers->push(new RequestHandler($method, $uri))->last();
     }
 
     /**
-     * Add a request handler for the get request to the given path
+     * Add a request handler for the get request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function get(string $path): RequestHandler
+    public function get(string $uri): RequestHandler
     {
-        return $this->expects('GET', $path);
+        return $this->expects('GET', $uri);
     }
 
     /**
-     * Add a request handler for the post request to the given path
+     * Add a request handler for the post request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function post(string $path): RequestHandler
+    public function post(string $uri): RequestHandler
     {
-        return $this->expects('POST', $path);
+        return $this->expects('POST', $uri);
     }
 
     /**
-     * Add a request handler for the put request to the given path
+     * Add a request handler for the put request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function put(string $path): RequestHandler
+    public function put(string $uri): RequestHandler
     {
-        return $this->expects('PUT', $path);
+        return $this->expects('PUT', $uri);
     }
 
     /**
-     * Add a request handler for the patch request to the given path
+     * Add a request handler for the patch request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function patch(string $path): RequestHandler
+    public function patch(string $uri): RequestHandler
     {
-        return $this->expects('PATCH', $path);
+        return $this->expects('PATCH', $uri);
     }
 
     /**
-     * Add a request handler for the delete request to the given path
+     * Add a request handler for the delete request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function delete(string $path): RequestHandler
+    public function delete(string $uri): RequestHandler
     {
-        return $this->expects('DELETE', $path);
+        return $this->expects('DELETE', $uri);
     }
 
     /**
-     * Add a request handler for the head request to the given path
+     * Add a request handler for the head request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function head(string $path): RequestHandler
+    public function head(string $uri): RequestHandler
     {
-        return $this->expects('HEAD', $path);
+        return $this->expects('HEAD', $uri);
     }
 
     /**
-     * Add a request handler for the options request to the given path
+     * Add a request handler for the options request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function options(string $path): RequestHandler
+    public function options(string $uri): RequestHandler
     {
-        return $this->expects('OPTIONS', $path);
+        return $this->expects('OPTIONS', $uri);
     }
 
     /**

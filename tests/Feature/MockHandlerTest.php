@@ -262,4 +262,28 @@ class MockHandlerTest extends TestCase
 
         $this->assertNull($expectation->getRequest());
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_a_response_when_the_expectation_specifies_a_host()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->get('https://test.dev/test');
+
+        $this->assertSame(200, $client->get('https://test.dev/test')->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_matches_expectations_with_just_paths_and_expectations_with_hosts()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->get('https://test.dev/test')->respondWith(200);
+        $mockHandler->get('/test')->respondWith(404);
+
+        $this->assertSame(200, $client->get('https://test.dev/test')->getStatusCode());
+        $this->assertSame(404, $client->get('https://test.dev/test')->getStatusCode());
+    }
 }

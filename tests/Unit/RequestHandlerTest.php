@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
@@ -156,5 +157,65 @@ class RequestHandlerTest extends TestCase
             return true;
         });
         $this->assertFalse($handler->shouldHandle(new Request('GET', '/wat'), []));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_handle_the_request_when_it_matches_the_host_and_path()
+    {
+        $handler = new RequestHandler('GET', 'http://test.dev/test');
+        $handler->when(function () {
+            return true;
+        });
+        $this->assertTrue($handler->shouldHandle(new Request('GET', 'http://test.dev/test'), []));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_handle_the_request_when_it_does_not_match_the_host()
+    {
+        $handler = new RequestHandler('GET', 'http://test.dev/test');
+        $handler->when(function () {
+            return true;
+        });
+        $this->assertFalse($handler->shouldHandle(new Request('GET', 'http://incorrect.dev/test'), []));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_handle_the_request_when_it_does_not_match_the_scheme()
+    {
+        $handler = new RequestHandler('GET', 'http://test.dev/test');
+        $handler->when(function () {
+            return true;
+        });
+        $this->assertFalse($handler->shouldHandle(new Request('GET', 'https://test.dev/test'), []));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_handle_the_request_when_it_does_not_match_the_path()
+    {
+        $handler = new RequestHandler('GET', 'http://test.dev/test');
+        $handler->when(function () {
+            return true;
+        });
+        $this->assertFalse($handler->shouldHandle(new Request('GET', 'http://test.dev/incorrect'), []));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_handle_the_request_when_the_path_does_not_have_a_preceeding_slack()
+    {
+        $handler = new RequestHandler('GET', 'test');
+        $handler->when(function () {
+            return true;
+        });
+        $this->assertTrue($handler->shouldHandle(new Request('GET', '/test'), []));
     }
 }

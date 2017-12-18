@@ -2,6 +2,8 @@
 
 namespace JSHayes\FakeRequests;
 
+use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -11,11 +13,15 @@ class RequestHandler
     private $response;
     private $request;
     private $when;
+    private $method;
+    private $path;
+    private $uri;
 
-    public function __construct(string $method, string $path)
+    public function __construct(string $method, string $uri)
     {
         $this->method = strtoupper($method);
-        $this->path = ltrim($path, '/');
+        $this->uri = new Uri($uri);
+        $this->path = ltrim($this->uri->getPath(), '/');
 
         $this->respondWith(function () {});
         $this->when(function () {
@@ -34,6 +40,14 @@ class RequestHandler
     {
         $method = strtoupper($request->getMethod());
         $path = ltrim($request->getUri()->getPath(), '/');
+
+        if (!empty($this->uri->getHost()) && $this->uri->getHost() != $request->getUri()->getHost()) {
+            return false;
+        }
+
+        if (!empty($this->uri->getScheme()) && $this->uri->getScheme() != $request->getUri()->getScheme()) {
+            return false;
+        }
 
         return $method == $this->method && $path == $this->path && call_user_func($this->when, $request, $options);
     }
