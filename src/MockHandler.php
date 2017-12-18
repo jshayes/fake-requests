@@ -28,17 +28,7 @@ class MockHandler
      */
     public function expects(string $method, string $path): RequestHandler
     {
-        $method = strtoupper($method);
-        $path = ltrim($path, '/');
-        $handler = new RequestHandler();
-
-        $methodHandlers = $this->handlers->get($method, new Collection());
-        $pathHandlers = $methodHandlers->get($path, new Collection());
-        $pathHandlers->push($handler);
-        $methodHandlers->put($path, $pathHandlers);
-        $this->handlers->put($method, $methodHandlers);
-
-        return $handler;
+        return $this->handlers->push(new RequestHandler($method, $path))->last();
     }
 
     /**
@@ -138,23 +128,13 @@ class MockHandler
      */
     public function __invoke(RequestInterface $request, array $options): PromiseInterface
     {
-        $method = strtoupper($request->getMethod());
-        $path = ltrim($request->getUri()->getPath(), '/');
-
-        $methodHandlers = $this->handlers->get($method, new Collection());
-        $pathHandlers = $methodHandlers->get($path, new Collection());
-
-        if ($pathHandlers->isEmpty()) {
-            throw new UnhandledRequestException($method, $path);
-        }
-
-        foreach ($pathHandlers as $key => $handler) {
+        foreach ($this->handlers as $key => $handler) {
             if ($handler->shouldHandle($request, $options)) {
-                $pathHandlers->pull($key);
+                $this->handlers->pull($key);
                 return Promise\promise_for($handler->handle($request, $options));
             }
         }
 
-        throw new UnhandledRequestException($method, $path);
+        throw new UnhandledRequestException($request);
     }
 }

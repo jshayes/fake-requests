@@ -17,7 +17,7 @@ class RequestHandlerTest extends TestCase
      */
     public function handle_returns_a_200_response_by_default()
     {
-        $handler = new RequestHandler();
+        $handler = new RequestHandler('GET', '/test');
         $response = $handler->handle(new Request('GET', '/test'), []);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
@@ -31,7 +31,7 @@ class RequestHandlerTest extends TestCase
      */
     public function you_can_add_a_custom_response()
     {
-        $handler = new RequestHandler();
+        $handler = new RequestHandler('GET', '/test');
         $response = new Response();
         $handler->respondWith($response);
 
@@ -43,7 +43,7 @@ class RequestHandlerTest extends TestCase
      */
     public function you_can_customize_response_with_closure()
     {
-        $handler = new RequestHandler();
+        $handler = new RequestHandler('GET', '/test');
         $handler->respondWith(function (ResponseBuilder $builder) {
             $builder->status(404);
             $builder->body('test body');
@@ -61,7 +61,7 @@ class RequestHandlerTest extends TestCase
      */
     public function you_can_customize_response_with_parameters()
     {
-        $handler = new RequestHandler();
+        $handler = new RequestHandler('GET', '/test');
         $handler->respondWith(404, 'test body', ['header' => 'value']);
         $response = $handler->handle(new Request('GET', '/test'), []);
 
@@ -76,7 +76,7 @@ class RequestHandlerTest extends TestCase
     public function you_can_inspect_the_request_and_options()
     {
         $ran = false;
-        $handler = new RequestHandler();
+        $handler = new RequestHandler('GET', '/test');
         $handler->inspectRequest(function (RequestInterface $request, array $options) use (&$ran) {
             $this->assertSame('GET', $request->getMethod());
             $this->assertSame('/test', $request->getUri()->getPath());
@@ -93,7 +93,7 @@ class RequestHandlerTest extends TestCase
      */
     public function it_should_handle_requests_by_default()
     {
-        $handler = new RequestHandler();
+        $handler = new RequestHandler('GET', '/test');
         $this->assertTrue($handler->shouldHandle(new Request('GET', '/test'), []));
     }
 
@@ -102,7 +102,7 @@ class RequestHandlerTest extends TestCase
      */
     public function it_should_not_handle_requests_when_the_when_condition_fails()
     {
-        $handler = new RequestHandler();
+        $handler = new RequestHandler('GET', '/test');
         $handler->when(function () {
             return false;
         });
@@ -112,9 +112,9 @@ class RequestHandlerTest extends TestCase
     /**
      * @test
      */
-    public function it_should_not_handle_requests_when_the_when_condition_passes()
+    public function it_should_handle_requests_when_the_when_condition_passes()
     {
-        $handler = new RequestHandler();
+        $handler = new RequestHandler('GET', '/test');
         $handler->when(function () {
             return true;
         });
@@ -126,11 +126,35 @@ class RequestHandlerTest extends TestCase
      */
     public function you_can_get_the_request_after_one_has_been_handled()
     {
-        $handler = new RequestHandler();
+        $handler = new RequestHandler('GET', '/test');
         $request = new Request('GET', '/test');
 
         $handler->handle($request, []);
 
         $this->assertSame($request, $handler->getRequest());
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_handle_requests_when_the_method_does_not_match()
+    {
+        $handler = new RequestHandler('GET', '/test');
+        $handler->when(function () {
+            return true;
+        });
+        $this->assertFalse($handler->shouldHandle(new Request('POST', '/test'), []));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_handle_requests_when_the_path_does_not_match()
+    {
+        $handler = new RequestHandler('GET', '/test');
+        $handler->when(function () {
+            return true;
+        });
+        $this->assertFalse($handler->shouldHandle(new Request('GET', '/wat'), []));
     }
 }

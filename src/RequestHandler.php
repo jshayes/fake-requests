@@ -12,8 +12,11 @@ class RequestHandler
     private $request;
     private $when;
 
-    public function __construct()
+    public function __construct(string $method, string $path)
     {
+        $this->method = strtoupper($method);
+        $this->path = ltrim($path, '/');
+
         $this->respondWith(function () {});
         $this->when(function () {
             return true;
@@ -29,7 +32,10 @@ class RequestHandler
      */
     public function shouldHandle(RequestInterface $request, array $options): bool
     {
-        return call_user_func($this->when, $request, $options);
+        $method = strtoupper($request->getMethod());
+        $path = ltrim($request->getUri()->getPath(), '/');
+
+        return $method == $this->method && $path == $this->path && call_user_func($this->when, $request, $options);
     }
 
     /**
