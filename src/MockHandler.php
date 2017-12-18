@@ -120,6 +120,16 @@ class MockHandler
     }
 
     /**
+     * Get the request handlers currently registered with this handler
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getHandlers(): Collection
+    {
+        return $this->handlers;
+    }
+
+    /**
      * Find the first request handler that matches the method and path of the
      * given request and execute it
      *

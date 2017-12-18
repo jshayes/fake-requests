@@ -30,6 +30,26 @@ class RequestHandler
     }
 
     /**
+     * Get the Uri for this request handler
+     *
+     * @return \GuzzleHttp\Psr7\Uri
+     */
+    public function getUri(): Uri
+    {
+        return $this->uri;
+    }
+
+    /**
+     * Get the request method for this request handler
+     *
+     * @return string
+     */
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    /**
      * Determine if this request should be handled
      *
      * @param \Psr\Http\Message\RequestInterface $request
