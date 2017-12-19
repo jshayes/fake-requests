@@ -73,11 +73,12 @@ $mockHandler->get('/test')->inspectRequest(function (RequestInterface $request, 
 });
 ```
 
-Alternatively, you can use the `getRequest` method to get the request off the RequestHandler after it has been handled.
+Alternatively, you can use the `getRequest` method to get the request off the RequestHandler after it has been handled. This request is an instance of `\JSHayes\FakeRequests\Request`, which is a decorator around the `\Psr\Http\Message\RequestInterface`. This decorator exposes a few assertion helper functions.
 ```PHP
 $expectation = $mockHandler->get('/test');
 $factory->make()->get('/get-request');
-$expectation->getRequest();
+$request = $expectation->getRequest();
+$request->assertBodyEquals('');
 ```
 
 Note that the request is null until one has been handled by the handler.
@@ -95,7 +96,7 @@ The second method is by creating a request that implements `\Psr\Http\Message\Re
 $mockHandler->get('/test')->respondWith(new Response(200, ['header' => 'value'], 'body'));
 ```
 
-The third method is by passing a callback to `respondWith`. This callback will receive an instance of `JSHayes\FakeRequests\ResponseBuilder`
+The third method is by passing a callback to `respondWith`. This callback will receive an instance of `\JSHayes\FakeRequests\ResponseBuilder`
 ```PHP
 $mockHandler->get('/test')->respondWith(function (ResponseBuilder $builder) {
     $builder->status(200);
