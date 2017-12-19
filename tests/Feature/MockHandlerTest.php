@@ -266,6 +266,24 @@ class MockHandlerTest extends TestCase
     /**
      * @test
      */
+    public function it_can_make_assertions_on_the_request_that_is_returned_from_the_expectation()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $expectation = $mockHandler->expects('get', '/test')->respondWith(200);
+
+        $client->get('/test?query=value', ['headers' => ['header' => ['value']]]);
+
+        $request = $expectation->getRequest();
+        $request->assertQueryEquals('query=value');
+        $request->assertHasQueryParam('query', 'value');
+        $request->assertNotHasQueryParam('missing');
+        $request->assertHasHeader('header', 'value');
+        $request->assertNotHasHeader('missing');
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_a_response_when_the_expectation_specifies_a_host()
     {
         $client = $this->makeClient($mockHandler = new MockHandler());

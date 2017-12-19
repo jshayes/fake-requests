@@ -7,9 +7,21 @@ use Psr\Http\Message\RequestInterface;
 
 class Request extends PHPUnit_Framework_Assert
 {
+    private $request;
+
     public function __construct(RequestInterface $request)
     {
         $this->request = $request;
+    }
+
+    /**
+     * Get the decorated request
+     *
+     * @return \Psr\Http\Message\RequestInterface
+     */
+    public function getRequest(): RequestInterface
+    {
+        return $this->request;
     }
 
     /**

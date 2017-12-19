@@ -172,10 +172,10 @@ class RequestHandler
     /**
      * Return the request that this handler handled
      *
-     * @return \Psr\Http\Message\RequestInterface|null
+     * @return \JSHayes\FakeRequests\Request|null
      */
-    public function getRequest(): ?RequestInterface
+    public function getRequest(): ?Request
     {
-        return $this->request;
+        return $this->request ? new Request($this->request) : null;
     }
 }
