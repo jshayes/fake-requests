@@ -14,6 +14,7 @@ use JSHayes\FakeRequests\Exceptions\UnhandledRequestException;
 class MockHandler
 {
     private $handlers;
+    private $allowsUnexpected = false;
 
     public function __construct()
     {
@@ -130,6 +131,18 @@ class MockHandler
     }
 
     /**
+     * Allows unexpected calls to this handler. When this is set, any call that
+     * does not have an expectation define will return a generic response.
+     *
+     * @return \JSHayes\FakeRequests\MockHandler
+     */
+    public function allowUnexpectedCalls(): MockHandler
+    {
+        $this->allowsUnexpected = true;
+        return $this;
+    }
+
+    /**
      * Find the first request handler that matches the method and path of the
      * given request and execute it
      *
@@ -144,6 +157,10 @@ class MockHandler
                 $this->handlers->pull($key);
                 return Promise\promise_for($handler->handle($request, $options));
             }
+        }
+
+        if ($this->allowsUnexpected) {
+            return Promise\promise_for(new Response());
         }
 
         throw new UnhandledRequestException($request);

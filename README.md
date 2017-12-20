@@ -73,7 +73,7 @@ $mockHandler->get('/test')->inspectRequest(function (RequestInterface $request, 
 });
 ```
 
-Alternatively, you can use the `getRequest` method to get the request off the RequestHandler after it has been handled. This request is an instance of `\JSHayes\FakeRequests\Request`, which is a decorator around the `\Psr\Http\Message\RequestInterface`. This decorator exposes a few assertion helper functions.
+Alternatively, you can use the `getRequest` method to get the request off the `RequestHandler` after it has been handled. This request is an instance of `\JSHayes\FakeRequests\Request`, which is a decorator around the `\Psr\Http\Message\RequestInterface`. This decorator exposes a few assertion helper functions.
 ```PHP
 $expectation = $mockHandler->get('/test');
 $factory->make()->get('/get-request');
@@ -115,6 +115,16 @@ $mockHandler->get('/test')->when(function (RequestInterface $request, array $opt
 ```
 
 The handler will only handle the request when the method and uri match, and when the `when` callback returns true.
+
+## Allowing Unexpected Calls
+Sometimes you might want the `MockHandler` to not error when it receives calls to endpoint that it did not expect calls to. In this case you can use the `allowUnexpectedCalls` method on the `MockHandler`
+
+```PHP
+$mockHandler->allowUnexpectedCalls();
+$client->get('/test');
+```
+
+In this example the `GET` request to `/test` will respond with a generic 200 response.
 
 ## Testing with Laravel
 This package also comes with a trait to make testing with Laravel a bit easier.

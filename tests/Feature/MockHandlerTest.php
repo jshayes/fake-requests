@@ -304,4 +304,29 @@ class MockHandlerTest extends TestCase
         $this->assertSame(200, $client->get('https://test.dev/test')->getStatusCode());
         $this->assertSame(404, $client->get('https://test.dev/test')->getStatusCode());
     }
+
+    /**
+     * @test
+     */
+    public function it_can_allow_unexpected_api_calls()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->allowUnexpectedCalls();
+
+        $this->assertSame(200, $client->get('https://test.dev/test')->getStatusCode());
+        $this->assertSame(200, $client->get('test')->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_not_empty_when_expectations_are_not_met_when_unexpected_api_calls_are_allowed()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->allowUnexpectedCalls();
+        $mockHandler->expects('GET', '/endpoint');
+
+        $this->assertSame(200, $client->get('https://test.dev/test')->getStatusCode());
+        $this->assertFalse($mockHandler->isEmpty());
+    }
 }
