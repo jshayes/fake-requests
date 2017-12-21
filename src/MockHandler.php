@@ -3,6 +3,7 @@
 namespace JSHayes\FakeRequests;
 
 use GuzzleHttp\Promise;
+use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
 use Psr\Http\Message\RequestInterface;
@@ -13,6 +14,7 @@ use JSHayes\FakeRequests\Exceptions\UnhandledRequestException;
 class MockHandler
 {
     private $handlers;
+    private $allowsUnexpected = false;
 
     public function __construct()
     {
@@ -20,101 +22,92 @@ class MockHandler
     }
 
     /**
-     * Add a request handler for the given http method and path
+     * Add a request handler for the given http method and uri
      *
      * @param string $method
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    private function addRequestHandler(string $method, string $path): RequestHandler
+    public function expects(string $method, string $uri): RequestHandler
     {
-        $path = ltrim($path, '/');
-        $handler = new RequestHandler();
-
-        $methodHandlers = $this->handlers->get($method, new Collection());
-        $pathHandlers = $methodHandlers->get($path, new Collection());
-        $pathHandlers->push($handler);
-        $methodHandlers->put($path, $pathHandlers);
-        $this->handlers->put($method, $methodHandlers);
-
-        return $handler;
+        return $this->handlers->push(new RequestHandler($method, $uri))->last();
     }
 
     /**
-     * Add a request handler for the get request to the given path
+     * Add a request handler for the get request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function get(string $path): RequestHandler
+    public function get(string $uri): RequestHandler
     {
-        return $this->addRequestHandler('GET', $path);
+        return $this->expects('GET', $uri);
     }
 
     /**
-     * Add a request handler for the post request to the given path
+     * Add a request handler for the post request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function post(string $path): RequestHandler
+    public function post(string $uri): RequestHandler
     {
-        return $this->addRequestHandler('POST', $path);
+        return $this->expects('POST', $uri);
     }
 
     /**
-     * Add a request handler for the put request to the given path
+     * Add a request handler for the put request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function put(string $path): RequestHandler
+    public function put(string $uri): RequestHandler
     {
-        return $this->addRequestHandler('PUT', $path);
+        return $this->expects('PUT', $uri);
     }
 
     /**
-     * Add a request handler for the patch request to the given path
+     * Add a request handler for the patch request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function patch(string $path): RequestHandler
+    public function patch(string $uri): RequestHandler
     {
-        return $this->addRequestHandler('PATCH', $path);
+        return $this->expects('PATCH', $uri);
     }
 
     /**
-     * Add a request handler for the delete request to the given path
+     * Add a request handler for the delete request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function delete(string $path): RequestHandler
+    public function delete(string $uri): RequestHandler
     {
-        return $this->addRequestHandler('DELETE', $path);
+        return $this->expects('DELETE', $uri);
     }
 
     /**
-     * Add a request handler for the head request to the given path
+     * Add a request handler for the head request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function head(string $path): RequestHandler
+    public function head(string $uri): RequestHandler
     {
-        return $this->addRequestHandler('HEAD', $path);
+        return $this->expects('HEAD', $uri);
     }
 
     /**
-     * Add a request handler for the options request to the given path
+     * Add a request handler for the options request to the given uri
      *
-     * @param string $path
+     * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function options(string $path): RequestHandler
+    public function options(string $uri): RequestHandler
     {
-        return $this->addRequestHandler('OPTIONS', $path);
+        return $this->expects('OPTIONS', $uri);
     }
 
     /**
@@ -128,6 +121,28 @@ class MockHandler
     }
 
     /**
+     * Get the request handlers currently registered with this handler
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getHandlers(): Collection
+    {
+        return $this->handlers;
+    }
+
+    /**
+     * Allows unexpected calls to this handler. When this is set, any call that
+     * does not have an expectation define will return a generic response.
+     *
+     * @return \JSHayes\FakeRequests\MockHandler
+     */
+    public function allowUnexpectedCalls(): MockHandler
+    {
+        $this->allowsUnexpected = true;
+        return $this;
+    }
+
+    /**
      * Find the first request handler that matches the method and path of the
      * given request and execute it
      *
@@ -137,17 +152,17 @@ class MockHandler
      */
     public function __invoke(RequestInterface $request, array $options): PromiseInterface
     {
-        $method = strtoupper($request->getMethod());
-        $path = ltrim($request->getUri()->getPath(), '/');
-
-        $methodHandlers = $this->handlers->get($method, new Collection());
-        $pathHandlers = $methodHandlers->get($path, new Collection());
-
-        if ($pathHandlers->isEmpty()) {
-            throw new UnhandledRequestException($method, $path);
+        foreach ($this->handlers as $key => $handler) {
+            if ($handler->shouldHandle($request, $options)) {
+                $this->handlers->pull($key);
+                return Promise\promise_for($handler->handle($request, $options));
+            }
         }
 
-        $handler = $pathHandlers->shift();
-        return Promise\promise_for($handler->handle($request, $options));
+        if ($this->allowsUnexpected) {
+            return Promise\promise_for(new Response());
+        }
+
+        throw new UnhandledRequestException($request);
     }
 }

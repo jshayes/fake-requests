@@ -2,6 +2,8 @@
 
 namespace JSHayes\FakeRequests;
 
+use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -9,10 +11,65 @@ class RequestHandler
 {
     private $callback;
     private $response;
+    private $request;
+    private $when;
+    private $method;
+    private $path;
+    private $uri;
 
-    public function __construct()
+    public function __construct(string $method, string $uri)
     {
+        $this->method = strtoupper($method);
+        $this->uri = new Uri($uri);
+        $this->path = ltrim($this->uri->getPath(), '/');
+
         $this->respondWith(function () {});
+        $this->when(function () {
+            return true;
+        });
+    }
+
+    /**
+     * Get the Uri for this request handler
+     *
+     * @return \GuzzleHttp\Psr7\Uri
+     */
+    public function getUri(): Uri
+    {
+        return $this->uri;
+    }
+
+    /**
+     * Get the request method for this request handler
+     *
+     * @return string
+     */
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    /**
+     * Determine if this request should be handled
+     *
+     * @param \Psr\Http\Message\RequestInterface $request
+     * @param arrar $options
+     * @return bool
+     */
+    public function shouldHandle(RequestInterface $request, array $options): bool
+    {
+        $method = strtoupper($request->getMethod());
+        $path = ltrim($request->getUri()->getPath(), '/');
+
+        if (!empty($this->uri->getHost()) && $this->uri->getHost() != $request->getUri()->getHost()) {
+            return false;
+        }
+
+        if (!empty($this->uri->getScheme()) && $this->uri->getScheme() != $request->getUri()->getScheme()) {
+            return false;
+        }
+
+        return $method == $this->method && $path == $this->path && call_user_func($this->when, $request, $options);
     }
 
     /**
@@ -29,6 +86,8 @@ class RequestHandler
             call_user_func($this->callback, $request, $options);
         }
 
+        $this->request = $request;
+
         return $this->response;
     }
 
@@ -42,6 +101,18 @@ class RequestHandler
     public function inspectRequest(callable $callback): RequestHandler
     {
         $this->callback = $callback;
+        return $this;
+    }
+
+    /**
+     * Set the callback that determines when this request should be handled
+     *
+     * @param callable $callback
+     * @return \JSHayes\FakeRequests\RequestHandler
+     */
+    public function when(callable $callback): RequestHandler
+    {
+        $this->when = $callback;
         return $this;
     }
 
@@ -96,5 +167,15 @@ class RequestHandler
             $builder->body($body);
             $builder->headers($headers);
         });
+    }
+
+    /**
+     * Return the request that this handler handled
+     *
+     * @return \JSHayes\FakeRequests\Request|null
+     */
+    public function getRequest(): ?Request
+    {
+        return $this->request ? new Request($this->request) : null;
     }
 }

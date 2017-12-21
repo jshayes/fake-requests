@@ -5,7 +5,7 @@ namespace Tests\Feature\Traits\Laravel;
 use GuzzleHttp\Psr7\Response;
 use Orchestra\Testbench\TestCase;
 use JSHayes\FakeRequests\ClientFactory;
-use PHPUnit_Framework_ExpectationFailedException;
+use PHPUnit_Framework_AssertionFailedError;
 use JSHayes\FakeRequests\Traits\Laravel\FakeRequests;
 
 class FakeRequestsTest extends TestCase
@@ -33,7 +33,29 @@ class FakeRequestsTest extends TestCase
 
         try {
             $this->checkHandler();
-        } catch (PHPUnit_Framework_ExpectationFailedException $e) {
+        } catch (PHPUnit_Framework_AssertionFailedError $e) {
+            // Reset the mock handler so that the checkHandler method doesn't fail after this test finishes
+            $this->fakeRequests();
+            return;
+        }
+
+        $this->fail();
+    }
+
+    /**
+     * @test
+     */
+    public function a_test_fails_if_not_all_expectations_are_consumed_when_unexpected_api_calls_are_allowed()
+    {
+        $handler = $this->fakeRequests()->allowUnexpectedCalls();
+        $handler->get('/test');
+
+        $client = resolve(ClientFactory::class)->make();
+        $client->get('/other');
+
+        try {
+            $this->checkHandler();
+        } catch (PHPUnit_Framework_AssertionFailedError $e) {
             // Reset the mock handler so that the checkHandler method doesn't fail after this test finishes
             $this->fakeRequests();
             return;

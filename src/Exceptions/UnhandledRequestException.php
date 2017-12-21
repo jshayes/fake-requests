@@ -3,11 +3,14 @@
 namespace JSHayes\FakeRequests\Exceptions;
 
 use Exception;
+use Psr\Http\Message\RequestInterface;
 
 class UnhandledRequestException extends Exception
 {
-    public function __construct(string $method, string $path)
+    public function __construct(RequestInterface $request)
     {
-        parent::__construct(sprintf('There was no response defined for the %s request to %s.', $method, $path));
+        $method = strtoupper($request->getMethod());
+
+        parent::__construct("There was no response defined for the {$method} request to \"{$request->getUri()}\".");
     }
 }

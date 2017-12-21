@@ -22,8 +22,9 @@ trait FakeRequests
      */
     protected function checkHandler()
     {
-        if (!is_null($this->mockHandler)) {
-            $this->assertTrue($this->mockHandler->isEmpty());
+        if (!is_null($this->mockHandler) && !$this->mockHandler->isEmpty()) {
+            $handler = $this->mockHandler->getHandlers()->first();
+            $this->fail("A {$handler->getMethod()} request to \"{$handler->getUri()}\" was expected.");
         }
     }
 }

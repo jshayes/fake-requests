@@ -15,7 +15,9 @@ class MockHandlerTest extends TestCase
     {
         $factory = new ClientFactory();
         $factory->setHandler($handler);
-        return $factory->make($options);
+        $client = $factory->make($options);
+        $client->getConfig('handler')->remove('http_errors');
+        return $client;
     }
 
     /**
@@ -158,5 +160,173 @@ class MockHandlerTest extends TestCase
         $mockHandler->get('test')->respondWith(200);
 
         $this->assertSame(200, $client->get('/test')->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_response_when_the_when_condition_passes()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->get('/test')->respondWith(200)->when(function () {
+            return false;
+        });
+        $mockHandler->get('/test')->respondWith(404)->when(function () {
+            return true;
+        });
+
+        $this->assertSame(404, $client->get('/test')->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_first_response_that_passes_the_when_condition()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->get('/test')->respondWith(200)->when(function () {
+            return true;
+        });
+        $mockHandler->get('/test')->respondWith(404)->when(function () {
+            return true;
+        });
+
+        $this->assertSame(200, $client->get('/test')->getStatusCode());
+        $this->assertSame(404, $client->get('/test')->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_doesnt_return_a_response_when_none_of_the_when_conditions_pass()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->get('/test')->respondWith(200)->when(function () {
+            return false;
+        });
+        $mockHandler->get('/test')->respondWith(404)->when(function () {
+            return false;
+        });
+
+        $this->expectException(UnhandledRequestException::class);
+        $client->get('/test');
+    }
+
+    /**
+     * @test
+     */
+    public function it_doesnt_return_a_response_when_the_path_does_not_match_but_the_when_condition_passes()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->get('/test')->respondWith(200)->when(function () {
+            return true;
+        });
+
+        $this->expectException(UnhandledRequestException::class);
+        $client->get('/wat');
+    }
+
+    /**
+     * @test
+     */
+    public function the_expects_method_can_be_used_to_make_an_expectation()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->expects('get', '/test')->respondWith(200);
+
+        $this->assertSame(200, $client->get('/test')->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_request_after_the_response_is_returned()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $expectation = $mockHandler->expects('get', '/test')->respondWith(200);
+
+        $client->get('/test');
+
+        $request = $expectation->getRequest();
+        $this->assertEquals('GET', $request->getMethod());
+        $this->assertEquals('/test', $request->getUri()->getPath());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_when_getting_the_request_before_it_is_handled()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $expectation = $mockHandler->expects('get', '/test')->respondWith(200);
+
+        $this->assertNull($expectation->getRequest());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_make_assertions_on_the_request_that_is_returned_from_the_expectation()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $expectation = $mockHandler->expects('get', '/test')->respondWith(200);
+
+        $client->get('/test?query=value', ['headers' => ['header' => ['value']]]);
+
+        $request = $expectation->getRequest();
+        $request->assertQueryEquals('query=value');
+        $request->assertHasQueryParam('query', 'value');
+        $request->assertNotHasQueryParam('missing');
+        $request->assertHasHeader('header', 'value');
+        $request->assertNotHasHeader('missing');
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_a_response_when_the_expectation_specifies_a_host()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->get('https://test.dev/test');
+
+        $this->assertSame(200, $client->get('https://test.dev/test')->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_matches_expectations_with_just_paths_and_expectations_with_hosts()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->get('https://test.dev/test')->respondWith(200);
+        $mockHandler->get('/test')->respondWith(404);
+
+        $this->assertSame(200, $client->get('https://test.dev/test')->getStatusCode());
+        $this->assertSame(404, $client->get('https://test.dev/test')->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_allow_unexpected_api_calls()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->allowUnexpectedCalls();
+
+        $this->assertSame(200, $client->get('https://test.dev/test')->getStatusCode());
+        $this->assertSame(200, $client->get('test')->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_not_empty_when_expectations_are_not_met_when_unexpected_api_calls_are_allowed()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->allowUnexpectedCalls();
+        $mockHandler->expects('GET', '/endpoint');
+
+        $this->assertSame(200, $client->get('https://test.dev/test')->getStatusCode());
+        $this->assertFalse($mockHandler->isEmpty());
     }
 }
