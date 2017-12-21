@@ -73,7 +73,7 @@ $mockHandler->get('/test')->inspectRequest(function (RequestInterface $request, 
 });
 ```
 
-Alternatively, you can use the `getRequest` method to get the request off the `RequestHandler` after it has been handled. This request is an instance of `\JSHayes\FakeRequests\Request`, which is a decorator around the `\Psr\Http\Message\RequestInterface`. This decorator exposes a few assertion helper functions.
+Alternatively, you can use the `getRequest` method to get the request off the `RequestHandler` after it has been handled. This request is an instance of `\JSHayes\FakeRequests\Request`, which is a decorator around the `\Psr\Http\Message\RequestInterface`. This decorator exposes a few assertion helper functions. For some examples, see the following
 ```PHP
 $expectation = $mockHandler->get('/test');
 $factory->make()->get('/get-request');
@@ -106,7 +106,7 @@ $mockHandler->get('/test')->respondWith(function (ResponseBuilder $builder) {
 ```
 
 ## Controlling when a handler should be handled
-If you would like more control over when a RequestHandler handles a given request, you can use the `when` method. This method receives an instance of `\Psr\Http\Message\RequestInterface` as the first parameter.
+If you would like more control over when a `RequestHandler` handles a given request, you can use the `when` method. This method receives an instance of `\Psr\Http\Message\RequestInterface` as the first parameter.
 
 ```PHP
 $mockHandler->get('/test')->when(function (RequestInterface $request, array $options) {
