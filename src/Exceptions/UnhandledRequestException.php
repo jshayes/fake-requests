@@ -10,8 +10,7 @@ class UnhandledRequestException extends Exception
     public function __construct(RequestInterface $request)
     {
         $method = strtoupper($request->getMethod());
-        $path = ltrim($request->getUri()->getPath(), '/');
 
-        parent::__construct(sprintf('There was no response defined for the %s request to %s.', $method, $path));
+        parent::__construct("There was no response defined for the {$method} request to \"{$request->getUri()}\".");
     }
 }
