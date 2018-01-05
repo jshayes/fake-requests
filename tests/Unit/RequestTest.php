@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use PHPUnit\Framework\TestCase;
 use JSHayes\FakeRequests\Request;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
-use PHPUnit_Framework_ExpectationFailedException;
+use PHPUnit\Framework\ExpectationFailedException;
 
 class RequestTest extends TestCase
 {
@@ -15,7 +15,7 @@ class RequestTest extends TestCase
     public function assert_has_header_fails_when_the_header_does_not_exist()
     {
         $request = new Request(new GuzzleRequest('get', '/test'));
-        $this->expectException(PHPUnit_Framework_ExpectationFailedException::class);
+        $this->expectException(ExpectationFailedException::class);
         $request->assertHasHeader('header');
     }
 
@@ -34,7 +34,7 @@ class RequestTest extends TestCase
     public function assert_has_header_fails_when_the_header_with_the_specified_value_does_not_exist()
     {
         $request = new Request(new GuzzleRequest('get', '/test', ['header' => []]));
-        $this->expectException(PHPUnit_Framework_ExpectationFailedException::class);
+        $this->expectException(ExpectationFailedException::class);
         $request->assertHasHeader('header', 'value');
     }
 
@@ -53,7 +53,7 @@ class RequestTest extends TestCase
     public function assert_not_has_header_fails_when_the_header_exists()
     {
         $request = new Request(new GuzzleRequest('get', '/test', ['header' => []]));
-        $this->expectException(PHPUnit_Framework_ExpectationFailedException::class);
+        $this->expectException(ExpectationFailedException::class);
         $request->assertNotHasHeader('header');
     }
 
@@ -72,7 +72,7 @@ class RequestTest extends TestCase
     public function assert_not_has_header_fails_when_the_header_with_the_specified_value_exists()
     {
         $request = new Request(new GuzzleRequest('get', '/test', ['header' => ['value']]));
-        $this->expectException(PHPUnit_Framework_ExpectationFailedException::class);
+        $this->expectException(ExpectationFailedException::class);
         $request->assertNotHasHeader('header', 'value');
     }
 
@@ -100,7 +100,7 @@ class RequestTest extends TestCase
     public function assert_has_query_param_fails_when_the_query_param_does_not_exist()
     {
         $request = new Request(new GuzzleRequest('get', '/test'));
-        $this->expectException(PHPUnit_Framework_ExpectationFailedException::class);
+        $this->expectException(ExpectationFailedException::class);
         $request->assertHasQueryParam('query');
     }
 
@@ -119,7 +119,7 @@ class RequestTest extends TestCase
     public function assert_has_query_param_fails_when_the_query_param_does_not_have_the_specified_value()
     {
         $request = new Request(new GuzzleRequest('get', '/test?query=value'));
-        $this->expectException(PHPUnit_Framework_ExpectationFailedException::class);
+        $this->expectException(ExpectationFailedException::class);
         $request->assertHasQueryParam('query', 'incorrect');
     }
 
@@ -138,7 +138,7 @@ class RequestTest extends TestCase
     public function assert_not_has_query_param_fails_when_the_query_param_exists()
     {
         $request = new Request(new GuzzleRequest('get', '/test?query=value'));
-        $this->expectException(PHPUnit_Framework_ExpectationFailedException::class);
+        $this->expectException(ExpectationFailedException::class);
         $request->assertNotHasQueryParam('query');
     }
 
@@ -157,7 +157,7 @@ class RequestTest extends TestCase
     public function assert_not_has_query_param_fails_when_the_query_param_has_the_specified_value()
     {
         $request = new Request(new GuzzleRequest('get', '/test?query=value'));
-        $this->expectException(PHPUnit_Framework_ExpectationFailedException::class);
+        $this->expectException(ExpectationFailedException::class);
         $request->assertNotHasQueryParam('query', 'value');
     }
 
@@ -185,7 +185,7 @@ class RequestTest extends TestCase
     public function assert_query_equals_fails_when_the_query_string_does_not_match()
     {
         $request = new Request(new GuzzleRequest('get', '/test?query=value'));
-        $this->expectException(PHPUnit_Framework_ExpectationFailedException::class);
+        $this->expectException(ExpectationFailedException::class);
         $request->assertQueryEquals('query=incorrect');
     }
 
@@ -204,7 +204,7 @@ class RequestTest extends TestCase
     public function assert_body_equals_fails_when_the_body_string_does_not_match()
     {
         $request = new Request(new GuzzleRequest('get', '/test', [], 'das body'));
-        $this->expectException(PHPUnit_Framework_ExpectationFailedException::class);
+        $this->expectException(ExpectationFailedException::class);
         $request->assertQueryEquals('body');
     }
 

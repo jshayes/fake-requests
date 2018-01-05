@@ -2,10 +2,10 @@
 
 namespace JSHayes\FakeRequests;
 
-use PHPUnit_Framework_Assert;
+use PHPUnit\Framework\Assert;
 use Psr\Http\Message\RequestInterface;
 
-class Request extends PHPUnit_Framework_Assert
+class Request extends Assert
 {
     private $request;
 

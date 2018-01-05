@@ -5,7 +5,7 @@ namespace Tests\Feature\Traits\Laravel;
 use GuzzleHttp\Psr7\Response;
 use Orchestra\Testbench\TestCase;
 use JSHayes\FakeRequests\ClientFactory;
-use PHPUnit_Framework_AssertionFailedError;
+use PHPUnit\Framework\AssertionFailedError;
 use JSHayes\FakeRequests\Traits\Laravel\FakeRequests;
 
 class FakeRequestsTest extends TestCase
@@ -33,7 +33,7 @@ class FakeRequestsTest extends TestCase
 
         try {
             $this->checkHandler();
-        } catch (PHPUnit_Framework_AssertionFailedError $e) {
+        } catch (AssertionFailedError $e) {
             // Reset the mock handler so that the checkHandler method doesn't fail after this test finishes
             $this->fakeRequests();
             return;
@@ -55,7 +55,7 @@ class FakeRequestsTest extends TestCase
 
         try {
             $this->checkHandler();
-        } catch (PHPUnit_Framework_AssertionFailedError $e) {
+        } catch (AssertionFailedError $e) {
             // Reset the mock handler so that the checkHandler method doesn't fail after this test finishes
             $this->fakeRequests();
             return;
