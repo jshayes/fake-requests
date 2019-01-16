@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Tests\Doubles\Decorator;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use JSHayes\FakeRequests\MockHandler;
@@ -328,5 +329,19 @@ class MockHandlerTest extends TestCase
 
         $this->assertSame(200, $client->get('https://test.dev/test')->getStatusCode());
         $this->assertFalse($mockHandler->isEmpty());
+    }
+
+    /**
+     * @test
+     */
+    public function it_decorates_the_request_handler_when_a_decorator_is_set()
+    {
+        $client = $this->makeClient($mockHandler = new MockHandler());
+        $mockHandler->setDecorator(new Decorator());
+        $expectation = $mockHandler->expects('POST', '/test');
+
+        $this->assertSame(200, $client->post('https://test.dev/test', ['json' => ['key' => 'value']])->getStatusCode());
+
+        $this->assertEquals(['key' => 'value'], $expectation->getDecodedRequestBody());
     }
 }
