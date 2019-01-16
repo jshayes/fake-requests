@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use GuzzleHttp\Psr7\Request;
+use Tests\Doubles\Decorator;
 use PHPUnit\Framework\TestCase;
 use JSHayes\FakeRequests\MockHandler;
 use JSHayes\FakeRequests\RequestHandler;
@@ -110,5 +111,16 @@ class MockHandlerTest extends TestCase
         $handler($request, []);
 
         $this->assertTrue($handler->isEmpty());
+    }
+
+    /**
+     * @test
+     */
+    public function setting_a_decorator_decorates_that_request_handler()
+    {
+        $handler = new MockHandler();
+        $handler->setDecorator(new Decorator());
+
+        $this->assertInstanceOf(Decorator::class, $handler->expects('get', '/test'));
     }
 }

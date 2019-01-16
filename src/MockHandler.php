@@ -8,11 +8,12 @@ use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
 use Psr\Http\Message\RequestInterface;
 use GuzzleHttp\Promise\PromiseInterface;
-use JSHayes\FakeRequests\RequestHandler;
 use JSHayes\FakeRequests\Exceptions\UnhandledRequestException;
+use JSHayes\FakeRequests\Contracts\RequestHandler as RequestHandlerContract;
 
 class MockHandler
 {
+    private $decorator;
     private $handlers;
     private $allowsUnexpected = false;
 
@@ -22,15 +23,26 @@ class MockHandler
     }
 
     /**
+     * Decorate the given request handler if a decorator has be set
+     *
+     * @param \JSHayes\FakeRequests\Contracts\RequestHandler $handler
+     * @return \JSHayes\FakeRequests\Contracts\RequestHandler
+     */
+    private function decorate(RequestHandlerContract $handler): RequestHandlerContract
+    {
+        return $this->decorator ? $this->decorator->decorate($handler) : $handler;
+    }
+
+    /**
      * Add a request handler for the given http method and uri
      *
      * @param string $method
      * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function expects(string $method, string $uri): RequestHandler
+    public function expects(string $method, string $uri): RequestHandlerContract
     {
-        return $this->handlers->push(new RequestHandler($method, $uri))->last();
+        return $this->handlers->push($this->decorate(new RequestHandler($method, $uri)))->last();
     }
 
     /**
@@ -39,7 +51,7 @@ class MockHandler
      * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function get(string $uri): RequestHandler
+    public function get(string $uri): RequestHandlerContract
     {
         return $this->expects('GET', $uri);
     }
@@ -50,7 +62,7 @@ class MockHandler
      * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function post(string $uri): RequestHandler
+    public function post(string $uri): RequestHandlerContract
     {
         return $this->expects('POST', $uri);
     }
@@ -61,7 +73,7 @@ class MockHandler
      * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function put(string $uri): RequestHandler
+    public function put(string $uri): RequestHandlerContract
     {
         return $this->expects('PUT', $uri);
     }
@@ -72,7 +84,7 @@ class MockHandler
      * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function patch(string $uri): RequestHandler
+    public function patch(string $uri): RequestHandlerContract
     {
         return $this->expects('PATCH', $uri);
     }
@@ -83,7 +95,7 @@ class MockHandler
      * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function delete(string $uri): RequestHandler
+    public function delete(string $uri): RequestHandlerContract
     {
         return $this->expects('DELETE', $uri);
     }
@@ -94,7 +106,7 @@ class MockHandler
      * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function head(string $uri): RequestHandler
+    public function head(string $uri): RequestHandlerContract
     {
         return $this->expects('HEAD', $uri);
     }
@@ -105,7 +117,7 @@ class MockHandler
      * @param string $uri
      * @return \JSHayes\FakeRequests\RequestHandler
      */
-    public function options(string $uri): RequestHandler
+    public function options(string $uri): RequestHandlerContract
     {
         return $this->expects('OPTIONS', $uri);
     }
@@ -139,6 +151,18 @@ class MockHandler
     public function allowUnexpectedCalls(): MockHandler
     {
         $this->allowsUnexpected = true;
+        return $this;
+    }
+
+    /**
+     * Set a decorator that will decorate the request handlers
+     *
+     * @param \JSHayes\FakeRequests\Decorator $decorator
+     * @return \JSHayes\FakeRequests\MockHandler
+     */
+    public function setDecorator(Decorator $decorator): MockHandler
+    {
+        $this->decorator = $decorator;
         return $this;
     }
 

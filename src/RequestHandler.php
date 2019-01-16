@@ -3,11 +3,11 @@
 namespace JSHayes\FakeRequests;
 
 use GuzzleHttp\Psr7\Uri;
-use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use JSHayes\FakeRequests\Contracts\RequestHandler as RequestHandlerContract;
 
-class RequestHandler
+class RequestHandler implements RequestHandlerContract
 {
     private $callback;
     private $response;
@@ -23,7 +23,8 @@ class RequestHandler
         $this->uri = new Uri($uri);
         $this->path = ltrim($this->uri->getPath(), '/');
 
-        $this->respondWith(function () {});
+        $this->respondWith(function () {
+        });
         $this->when(function () {
             return true;
         });
@@ -96,9 +97,9 @@ class RequestHandler
      * it
      *
      * @param callable $callback
-     * @return \JSHayes\FakeRequests\RequestHandler
+     * @return \JSHayes\FakeRequests\Contracts\RequestHandler
      */
-    public function inspectRequest(callable $callback): RequestHandler
+    public function inspectRequest(callable $callback): RequestHandlerContract
     {
         $this->callback = $callback;
         return $this;
@@ -108,9 +109,9 @@ class RequestHandler
      * Set the callback that determines when this request should be handled
      *
      * @param callable $callback
-     * @return \JSHayes\FakeRequests\RequestHandler
+     * @return \JSHayes\FakeRequests\Contracts\RequestHandler
      */
-    public function when(callable $callback): RequestHandler
+    public function when(callable $callback): RequestHandlerContract
     {
         $this->when = $callback;
         return $this;
@@ -124,9 +125,9 @@ class RequestHandler
      *          ResponseInterface
      *          callable, @see respondWithCallback
      *          int, @see responseWithParameters
-     * @return \JSHayes\FakeRequests\RequestHandler
+     * @return \JSHayes\FakeRequests\Contracts\RequestHandler
      */
-    public function respondWith($arg): RequestHandler
+    public function respondWith($arg): RequestHandlerContract
     {
         if ($arg instanceof ResponseInterface) {
             $this->response = $arg;
