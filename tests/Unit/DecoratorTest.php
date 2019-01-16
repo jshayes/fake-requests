@@ -234,4 +234,28 @@ class DecoratorTest extends TestCase
         });
         $this->assertTrue($handler->shouldHandle(new Request('GET', '/test'), []));
     }
+
+    /**
+     * @test
+     */
+    public function it_can_get_the_uri()
+    {
+        $decorator = new Decorator();
+        $handler = $decorator->decorate(new RequestHandler('GET', 'http://test.dev/test'));
+
+        $this->assertSame('http', $handler->getUri()->getScheme());
+        $this->assertSame('test.dev', $handler->getUri()->getHost());
+        $this->assertSame('/test', $handler->getUri()->getPath());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_get_the_method()
+    {
+        $decorator = new Decorator();
+        $handler = $decorator->decorate(new RequestHandler('GET', 'http://test.dev/test'));
+
+        $this->assertSame('GET', $handler->getMethod());
+    }
 }
