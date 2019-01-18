@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use GuzzleHttp\Psr7\Request;
 use PHPUnit\Framework\TestCase;
+use Tests\Doubles\ExtendedRequest;
 use JSHayes\FakeRequests\MockHandler;
 use JSHayes\FakeRequests\RequestHandler;
 
@@ -110,5 +111,21 @@ class MockHandlerTest extends TestCase
         $handler($request, []);
 
         $this->assertTrue($handler->isEmpty());
+    }
+
+    /**
+     * @test
+     */
+    public function extending_the_request_will_wrap_the_request_is_the_specified_class()
+    {
+        $handler = new MockHandler();
+        $handler->extendRequest(ExtendedRequest::class);
+        $expectation = $handler->expects('get', 'test');
+
+        $request = new Request('GET', 'http://test.dev/test');
+        $handler($request, []);
+
+        $this->assertInstanceOf(ExtendedRequest::class, $expectation->getRequest());
+        $this->assertSame($request, $expectation->getRequest()->getRequest());
     }
 }

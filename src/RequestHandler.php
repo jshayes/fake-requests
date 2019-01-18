@@ -3,7 +3,6 @@
 namespace JSHayes\FakeRequests;
 
 use GuzzleHttp\Psr7\Uri;
-use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -16,14 +15,17 @@ class RequestHandler
     private $method;
     private $path;
     private $uri;
+    private $requestClass;
 
     public function __construct(string $method, string $uri)
     {
+        $this->requestClass = Request::class;
         $this->method = strtoupper($method);
         $this->uri = new Uri($uri);
         $this->path = ltrim($this->uri->getPath(), '/');
 
-        $this->respondWith(function () {});
+        $this->respondWith(function () {
+        });
         $this->when(function () {
             return true;
         });
@@ -176,6 +178,20 @@ class RequestHandler
      */
     public function getRequest(): ?Request
     {
-        return $this->request ? new Request($this->request) : null;
+        $class = $this->requestClass;
+        return $this->request ? new $class($this->request) : null;
+    }
+
+    /**
+     * Specify the class that will be used to wrap the request that this handler handles.
+     * This class must extends \JSHayes\FakeRequests\Request
+     *
+     * @param string $class
+     * @return \JSHayes\FakeRequests\RequestHandler
+     */
+    public function extendRequest(string $class): RequestHandler
+    {
+        $this->requestClass = $class;
+        return $this;
     }
 }
