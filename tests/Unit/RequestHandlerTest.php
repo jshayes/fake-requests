@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
-use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
+use Tests\Doubles\ExtendedRequest;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use JSHayes\FakeRequests\RequestHandler;
@@ -217,5 +217,20 @@ class RequestHandlerTest extends TestCase
             return true;
         });
         $this->assertTrue($handler->shouldHandle(new Request('GET', '/test'), []));
+    }
+
+    /**
+     * @test
+     */
+    public function extending_the_request_will_wrap_the_request_is_the_specified_class()
+    {
+        $handler = new RequestHandler('GET', '/test');
+        $request = new Request('GET', '/test');
+        $handler->extendRequest(ExtendedRequest::class);
+
+        $handler->handle($request, []);
+
+        $this->assertInstanceOf(ExtendedRequest::class, $handler->getRequest());
+        $this->assertSame($request, $handler->getRequest()->getRequest());
     }
 }

@@ -68,20 +68,72 @@ public function test()
 ## Inspecting the request
 If you need to make assertions on the request that created, or the options that are provided, you can use the `inspectRequest` method. This method receives an instance of `\Psr\Http\Message\RequestInterface` as the first parameter.
 ```PHP
-$mockHandler->get('/test')->inspectRequest(function (RequestInterface $request, array $options) {
+$mockHandler->get('/get-request')->inspectRequest(function (RequestInterface $request, array $options) {
     // Make assertions on the request or options here
 });
 ```
 
 Alternatively, you can use the `getRequest` method to get the request off the `RequestHandler` after it has been handled. This request is an instance of `\JSHayes\FakeRequests\Request`, which is a decorator around the `\Psr\Http\Message\RequestInterface`. This decorator exposes a few assertion helper functions. For some examples, see the following
 ```PHP
-$expectation = $mockHandler->get('/test');
+$expectation = $mockHandler->get('/get-request');
 $factory->make()->get('/get-request');
 $request = $expectation->getRequest();
 $request->assertBodyEquals('');
 ```
 
 Note that the request is null until one has been handled by the handler.
+
+## Extending the request
+If you ever want to add some custom helper methods to the request, you can extend the request using the `extendRequest` method. This method accepts a string that is the class name of the request class you would like to use. This extended request class must extend `JSHayes\FakeRequests\Request`. Since the `JSHayes\FakeRequests\Request` class extends `PHPUnit\Framework\Assert`, your extended request class will have access to PHPUnit's assertion methods.
+
+For example, you can create an extended request similar to the following
+```PHP
+use JSHayes\FakeRequests\Request;
+
+class ExtendedRequest extends Request
+{
+    /**
+     * This is an example method in an extended request. These extended requests
+     * can be used to add assertion helpers to make testing request flows easier
+     *
+     * @return void
+     */
+    public function assertExample(): void
+    {
+        $this->assertTrue(true);
+    }
+}
+```
+
+This extended request can be user as follows
+```PHP
+// Register the extended request with the mock handler
+$mockHandler->extendRequest(ExtendedRequest::class);
+
+$expectation = $mockHandler->get('/get-request');
+$factory->make()->get('/get-request');
+
+// Getting the request from the expectation will return the extended request
+$request = $expectation->getRequest();
+$request->assertExample();
+```
+
+Alternatively, if you do not wish to extend every request that the mock handler handles, you can extend requests on the request handler itself.
+```PHP
+$expectation1 = $mockHandler->get('/get-request1')->extendRequest(ExtendedRequest::class);
+$expectation2 = $mockHandler->get('/get-request2');
+$factory->make()->get('/get-request1');
+$factory->make()->get('/get-request2');
+
+// Getting the request from the expectation will return the extended request
+$request = $expectation1->getRequest();
+$request->assertExample();
+
+// Getting the request for the second expectation will not return the extended request, since
+// we only extended the request on the first expectation. So, the assertExample method will
+// not be available here.
+$request->expectation2->getRequest();
+```
 
 ## Customizing the response
 There are a few ways to create a custom response for each expectation. When you create a custom response, that response is what will be returned to the guzzle client when the request expectation is met. The three ways to customize the response are as follows.

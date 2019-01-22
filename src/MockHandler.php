@@ -8,13 +8,13 @@ use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
 use Psr\Http\Message\RequestInterface;
 use GuzzleHttp\Promise\PromiseInterface;
-use JSHayes\FakeRequests\RequestHandler;
 use JSHayes\FakeRequests\Exceptions\UnhandledRequestException;
 
 class MockHandler
 {
     private $handlers;
     private $allowsUnexpected = false;
+    private $requestClass;
 
     public function __construct()
     {
@@ -30,7 +30,11 @@ class MockHandler
      */
     public function expects(string $method, string $uri): RequestHandler
     {
-        return $this->handlers->push(new RequestHandler($method, $uri))->last();
+        $handler = new RequestHandler($method, $uri);
+        if ($this->requestClass) {
+            $handler->extendRequest($this->requestClass);
+        }
+        return $this->handlers->push($handler)->last();
     }
 
     /**
@@ -139,6 +143,19 @@ class MockHandler
     public function allowUnexpectedCalls(): MockHandler
     {
         $this->allowsUnexpected = true;
+        return $this;
+    }
+
+    /**
+     * Specify a request class to use to decorate the request that gets handled
+     * by each request handler. This class must extend \JSHayes\FakeRequests\Request
+     *
+     * @param string $class
+     * @return \JSHayes\FakeRequests\MockHandler
+     */
+    public function extendRequest(string $class): MockHandler
+    {
+        $this->requestClass = $class;
         return $this;
     }
 
