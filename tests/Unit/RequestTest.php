@@ -216,4 +216,110 @@ class RequestTest extends TestCase
         $request = new Request(new GuzzleRequest('get', '/test', [], 'das body'));
         $request->assertBodyEquals('das body');
     }
+
+    /**
+     * @test
+     */
+    public function get_json_body_returns_the_json_decoded_body()
+    {
+        $request = new Request(new GuzzleRequest('get', '/test', [], '{"key":"value"}'));
+        $this->assertEquals(['key' => 'value'], $request->getJsonBody());
+    }
+
+    /**
+     * @test
+     */
+    public function assert_json_body_equals_succeeds_when_the_given_array_equals_the_body()
+    {
+        $request = new Request(new GuzzleRequest('get', '/test', [], '{"key":"value"}'));
+        $request->assertJsonBodyEquals(['key' => 'value']);
+    }
+
+    /**
+     * @test
+     */
+    public function assert_json_body_equals_fails_when_the_given_array_does_not_equal_the_body()
+    {
+        $request = new Request(new GuzzleRequest('get', '/test', [], '{"key":"value"}'));
+        $this->expectException(ExpectationFailedException::class);
+        $request->assertJsonBodyEquals(['key' => 'invalid']);
+    }
+
+    /**
+     * @test
+     */
+    public function assert_json_body_subset_succeeds_when_the_given_array_is_a_subset_of_the_body()
+    {
+        $request = new Request(new GuzzleRequest('get', '/test', [], '{"key1":"value","key2":"value"}'));
+        $request->assertJsonBodySubset(['key1' => 'value']);
+        $request->assertJsonBodySubset(['key2' => 'value']);
+    }
+
+    /**
+     * @test
+     */
+    public function assert_json_body_subset_fails_when_the_given_array_is_not_a_subset_of_the_body()
+    {
+        $request = new Request(new GuzzleRequest('get', '/test', [], '{"key1":"value","key2":"value"}'));
+        $this->expectException(ExpectationFailedException::class);
+        $request->assertJsonBodySubset(['key1' => 'invalid']);
+    }
+
+    /**
+     * @test
+     */
+    public function assert_json_body_has_key_succeeds_when_the_key_exists_in_the_body()
+    {
+        $request = new Request(new GuzzleRequest('get', '/test', [], '{"key1":"value","key2":"value"}'));
+        $request->assertJsonBodyHasKey('key1');
+        $request->assertJsonBodyHasKey('key2');
+    }
+
+    /**
+     * @test
+     */
+    public function assert_json_body_has_key_correctly_traverses_nested_keys()
+    {
+        $request = new Request(new GuzzleRequest('get', '/test', [], '{"key":{"inner":"value"}}'));
+        $request->assertJsonBodyHasKey('key.inner');
+    }
+
+    /**
+     * @test
+     */
+    public function assert_json_body_has_key_fails_when_the_key_does_not_exist_in_the_body()
+    {
+        $request = new Request(new GuzzleRequest('get', '/test', [], '{"key":"value"}'));
+        $this->expectException(ExpectationFailedException::class);
+        $request->assertJsonBodyHasKey('invalid');
+    }
+
+    /**
+     * @test
+     */
+    public function assert_json_body_contains_succeeds_when_the_key_and_value_combination_exists_in_the_body()
+    {
+        $request = new Request(new GuzzleRequest('get', '/test', [], '{"key1":"value1","key2":"value2"}'));
+        $request->assertJsonBodyContains('key1', 'value1');
+        $request->assertJsonBodyContains('key2', 'value2');
+    }
+
+    /**
+     * @test
+     */
+    public function assert_json_body_contains_correctly_traverses_nested_keys()
+    {
+        $request = new Request(new GuzzleRequest('get', '/test', [], '{"key":{"inner":"value"}}'));
+        $request->assertJsonBodyContains('key.inner', 'value');
+    }
+
+    /**
+     * @test
+     */
+    public function assert_json_body_contains_fails_when_the_key_and_value_combination_does_not_exist_in_the_body()
+    {
+        $request = new Request(new GuzzleRequest('get', '/test', [], '{"key":"value"}'));
+        $this->expectException(ExpectationFailedException::class);
+        $request->assertJsonBodyContains('key', 'invalid');
+    }
 }

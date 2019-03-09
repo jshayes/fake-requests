@@ -2,12 +2,14 @@
 
 namespace JSHayes\FakeRequests;
 
+use Illuminate\Support\Arr;
 use PHPUnit\Framework\Assert;
 use Psr\Http\Message\RequestInterface;
 
 class Request extends Assert
 {
     private $request;
+    private $jsonBody;
 
     public function __construct(RequestInterface $request)
     {
@@ -140,5 +142,64 @@ class Request extends Assert
     public function assertBodyEquals(string $body): void
     {
         $this->assertEquals($body, (string) $this->getBody());
+    }
+
+    /**
+     * Get the JSON decoded body
+     *
+     * @return array
+     */
+    public function getJsonBody(): array
+    {
+        return $this->jsonBody = $this->jsonBody ?? json_decode($this->getBody(), true);
+    }
+
+    /**
+     * Assert that the JSON decoded body equals the given array
+     *
+     * @param array $expected
+     * @return void
+     */
+    public function assertJsonBodyEquals(array $expected): void
+    {
+        $this->assertEquals($expected, $this->getJsonBody());
+    }
+
+    /**
+     * Assert that the JSON decoded body has the given array as a subset
+     *
+     * @param array $expected
+     * @return void
+     */
+    public function assertJsonBodySubset(array $subset): void
+    {
+        $this->assertArraySubset($subset, $this->getJsonBody());
+    }
+
+    /**
+     * Assert that the given key exists in the JSON body
+     *
+     * @param string $key
+     * @return void
+     */
+    public function assertJsonBodyHasKey(string $key): void
+    {
+        $this->assertTrue(
+            Arr::has($this->getJsonBody(), $key),
+            "Failed asserting that an array has the key '$key'."
+        );
+    }
+
+    /**
+     * Assert that the given key-value combination exists in the JSON body
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
+    public function assertJsonBodyContains(string $key, $value): void
+    {
+        $this->assertJsonBodyHasKey($key);
+        $this->assertEquals($value, Arr::get($this->getJsonBody(), $key));
     }
 }
