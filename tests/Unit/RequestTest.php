@@ -24,7 +24,7 @@ class RequestTest extends TestCase
      */
     public function assert_has_header_succeeds_when_the_header_exists()
     {
-        $request = new Request(new GuzzleRequest('get', '/test', ['header' => []]));
+        $request = new Request(new GuzzleRequest('get', '/test', ['header' => ['value']]));
         $request->assertHasHeader('header');
     }
 
@@ -33,7 +33,7 @@ class RequestTest extends TestCase
      */
     public function assert_has_header_fails_when_the_header_with_the_specified_value_does_not_exist()
     {
-        $request = new Request(new GuzzleRequest('get', '/test', ['header' => []]));
+        $request = new Request(new GuzzleRequest('get', '/test', ['header' => ['notValue']]));
         $this->expectException(ExpectationFailedException::class);
         $request->assertHasHeader('header', 'value');
     }
@@ -52,7 +52,7 @@ class RequestTest extends TestCase
      */
     public function assert_not_has_header_fails_when_the_header_exists()
     {
-        $request = new Request(new GuzzleRequest('get', '/test', ['header' => []]));
+        $request = new Request(new GuzzleRequest('get', '/test', ['header' => ['value']]));
         $this->expectException(ExpectationFailedException::class);
         $request->assertNotHasHeader('header');
     }
@@ -81,7 +81,7 @@ class RequestTest extends TestCase
      */
     public function assert_not_has_header_succeeds_when_the_header_with_the_specified_value_does_not_exist()
     {
-        $request = new Request(new GuzzleRequest('get', '/test', ['header' => []]));
+        $request = new Request(new GuzzleRequest('get', '/test', ['header' => ['notValue']]));
         $request->assertNotHasHeader('header', 'value');
     }
 
